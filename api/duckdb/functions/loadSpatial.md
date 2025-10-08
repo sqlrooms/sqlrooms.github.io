@@ -1,0 +1,27 @@
+---
+url: /api/duckdb/functions/loadSpatial.md
+---
+[@sqlrooms/duckdb](../index.md) / loadSpatial
+
+# Function: loadSpatial()
+
+> **loadSpatial**(`tableName`, `fileName`, `options`): `string`
+
+Load geometry data within a spatial file format.
+This method requires that the DuckDB spatial extension is loaded.
+Supports GeoJSON, TopoJSON, and other common spatial formats.
+For TopoJSON, set the layer option to indicate the feature to extract.
+
+## Parameters
+
+| Parameter | Type | Description |
+| ------ | ------ | ------ |
+| `tableName` | `string` | Name of the table to create |
+| `fileName` | `string` | Path to the spatial data file |
+| `options` | `objectOutputType` | Load options including spatial-specific options |
+
+## Returns
+
+`string`
+
+SQL query string to create the table
