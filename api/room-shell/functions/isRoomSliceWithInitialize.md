@@ -1,0 +1,18 @@
+---
+url: /api/room-shell/functions/isRoomSliceWithInitialize.md
+---
+[@sqlrooms/room-shell](../index.md) / isRoomSliceWithInitialize
+
+# Function: isRoomSliceWithInitialize()
+
+> **isRoomSliceWithInitialize**(`slice`): `slice is Required<Pick<SliceFunctions, "initialize">>`
+
+## Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `slice` | `unknown` |
+
+## Returns
+
+`slice is Required<Pick<SliceFunctions, "initialize">>`
