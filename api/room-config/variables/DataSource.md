@@ -1,0 +1,11 @@
+---
+url: /api/room-config/variables/DataSource.md
+---
+[@sqlrooms/room-config](../index.md) / DataSource
+
+# Variable: DataSource
+
+> `const` **DataSource**: `ZodDiscriminatedUnion`<\[`ZodObject`<{ `tableName`: `ZodString`; `type`: `ZodLiteral`<`"file"`>; `fileName`: `ZodString`; `loadOptions`: `ZodOptional`<`ZodDiscriminatedUnion`<\[`ZodObject`<{ `schema`: `ZodOptional`<`ZodString`>; `select`: `ZodOptional`<`ZodArray`<...>>; `where`: `ZodOptional`<`ZodString`>; `view`: `ZodOptional`<`ZodBoolean`>; `temp`: `ZodOptional`<`ZodBoolean`>; `replace`: `ZodOptional`<`ZodBoolean`>; `method`: `ZodEnum`<{ `read_json`: ...; `read_ndjson`: ...; `read_parquet`: ...; `read_csv`: ...; `auto`: ...; }>; }, `$catchall`<`ZodUnknown`>>, `ZodObject`<{ `schema`: `ZodOptional`<`ZodString`>; `select`: `ZodOptional`<`ZodArray`<...>>; `where`: `ZodOptional`<`ZodString`>; `view`: `ZodOptional`<`ZodBoolean`>; `temp`: `ZodOptional`<`ZodBoolean`>; `replace`: `ZodOptional`<`ZodBoolean`>; `options`: `ZodOptional`<`ZodUnion`<...>>; `method`: `ZodLiteral`<`"st_read"`>; }, `$catchall`<`ZodUnknown`>>], `"method"`>>; }, `$strip`>, `ZodObject`<{ `tableName`: `ZodString`; `type`: `ZodLiteral`<`"url"`>; `url`: `ZodString`; `loadOptions`: `ZodOptional`<`ZodDiscriminatedUnion`<\[`ZodObject`<{ `schema`: `ZodOptional`<`ZodString`>; `select`: `ZodOptional`<`ZodArray`<...>>; `where`: `ZodOptional`<`ZodString`>; `view`: `ZodOptional`<`ZodBoolean`>; `temp`: `ZodOptional`<`ZodBoolean`>; `replace`: `ZodOptional`<`ZodBoolean`>; `method`: `ZodEnum`<{ `read_json`: ...; `read_ndjson`: ...; `read_parquet`: ...; `read_csv`: ...; `auto`: ...; }>; }, `$catchall`<`ZodUnknown`>>, `ZodObject`<{ `schema`: `ZodOptional`<`ZodString`>; `select`: `ZodOptional`<`ZodArray`<...>>; `where`: `ZodOptional`<`ZodString`>; `view`: `ZodOptional`<`ZodBoolean`>; `temp`: `ZodOptional`<`ZodBoolean`>; `replace`: `ZodOptional`<`ZodBoolean`>; `options`: `ZodOptional`<`ZodUnion`<...>>; `method`: `ZodLiteral`<`"st_read"`>; }, `$catchall`<`ZodUnknown`>>], `"method"`>>; `httpMethod`: `ZodOptional`<`ZodString`>; `headers`: `ZodOptional`<`ZodRecord`<`ZodString`, `ZodString`>>; }, `$strip`>, `ZodObject`<{ `tableName`: `ZodString`; `type`: `ZodLiteral`<`"sql"`>; `sqlQuery`: `ZodString`; }, `$strip`>], `"type"`>
+
+Union type representing all possible data source configurations
+Discriminated union based on the 'type' field

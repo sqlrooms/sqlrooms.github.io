@@ -1,0 +1,18 @@
+---
+url: /api/ai/functions/AiSettingsPanel.md
+---
+[@sqlrooms/ai](../index.md) / AiSettingsPanel
+
+# Function: AiSettingsPanel()
+
+> **AiSettingsPanel**(`props`): `ReactNode` | `Promise`<`ReactNode`>
+
+## Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `props` | `PropsWithChildren` |
+
+## Returns
+
+`ReactNode` | `Promise`<`ReactNode`>
