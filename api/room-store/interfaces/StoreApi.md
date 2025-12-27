@@ -1,0 +1,88 @@
+---
+url: /api/room-store/interfaces/StoreApi.md
+---
+[@sqlrooms/room-store](../index.md) / StoreApi
+
+# Interface: StoreApi\<T>
+
+## Type Parameters
+
+| Type Parameter |
+| ------ |
+| `T` |
+
+## Properties
+
+### setState()
+
+> **setState**: {(`partial`, `replace?`): `void`; (`state`, `replace`): `void`; }
+
+#### Call Signature
+
+> (`partial`, `replace?`): `void`
+
+##### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `partial` | `T` | `Partial`<`T`> | (`state`) => `T` | `Partial`<`T`> |
+| `replace?` | `false` |
+
+##### Returns
+
+`void`
+
+#### Call Signature
+
+> (`state`, `replace`): `void`
+
+##### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `state` | `T` | (`state`) => `T` |
+| `replace` | `true` |
+
+##### Returns
+
+`void`
+
+***
+
+### getState()
+
+> **getState**: () => `T`
+
+#### Returns
+
+`T`
+
+***
+
+### getInitialState()
+
+> **getInitialState**: () => `T`
+
+#### Returns
+
+`T`
+
+***
+
+### subscribe()
+
+> **subscribe**: (`listener`) => () => `void`
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `listener` | (`state`, `prevState`) => `void` |
+
+#### Returns
+
+> (): `void`
+
+##### Returns
+
+`void`
