@@ -1,0 +1,41 @@
+---
+url: 'https://sqlrooms.org/api/room-store/type-aliases/PersistenceAdapter.md'
+---
+[@sqlrooms/room-store](../index.md) / PersistenceAdapter
+
+# Type Alias: PersistenceAdapter\<TSnapshot>
+
+> **PersistenceAdapter**<`TSnapshot`> = `object`
+
+## Type Parameters
+
+| Type Parameter |
+| ------ |
+| `TSnapshot` |
+
+## Properties
+
+### load
+
+> **load**: () => `Promise`<`TSnapshot` | `null`>
+
+#### Returns
+
+`Promise`<`TSnapshot` | `null`>
+
+***
+
+### save
+
+> **save**: (`snapshot`, `metadata?`) => `Promise`<`void`>
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `snapshot` | `TSnapshot` |
+| `metadata?` | [`PersistenceSaveMetadata`](PersistenceSaveMetadata.md) |
+
+#### Returns
+
+`Promise`<`void`>
