@@ -1,0 +1,192 @@
+---
+url: 'https://sqlrooms.org/api/vega.md'
+---
+# @sqlrooms/vega
+
+Vega-Lite chart components and AI chart tool integration for SQLRooms.
+
+## Installation
+
+```bash
+npm install @sqlrooms/vega @sqlrooms/duckdb @sqlrooms/ui
+```
+
+## Main exports
+
+* `VegaLiteChart` (simple + compound component API)
+* `createVegaChartTool()` for AI tool workflows
+* `createChartImageForMarkdownTool()` for AI-generated Markdown document image assets
+* `VegaChartToolResult`
+* editor utilities/hooks (`useVegaChartEditor`, `useVegaEditorContext`)
+
+## Quick start (simple chart)
+
+```tsx
+import {VegaLiteChart} from '@sqlrooms/vega';
+
+export function SalesChart() {
+  return (
+    <VegaLiteChart
+      sqlQuery="SELECT category, SUM(amount) AS total FROM sales GROUP BY category"
+      spec={{
+        mark: 'bar',
+        encoding: {
+          x: {field: 'category', type: 'nominal'},
+          y: {field: 'total', type: 'quantitative'},
+        },
+      }}
+      aspectRatio={16 / 9}
+    />
+  );
+}
+```
+
+## Compound component API (editable chart workflow)
+
+```tsx
+import {VegaLiteChart, type VisualizationSpec} from '@sqlrooms/vega';
+
+const initialSpec: VisualizationSpec = {
+  mark: 'line',
+  encoding: {
+    x: {field: 'date', type: 'temporal'},
+    y: {field: 'value', type: 'quantitative'},
+  },
+};
+
+export function CompoundVegaChart() {
+  return (
+    <VegaLiteChart.Container
+      spec={initialSpec}
+      sqlQuery="SELECT date, value FROM metrics"
+      editable
+      onSpecChange={(spec) => console.log('next spec', spec)}
+      onSqlChange={(sql) => console.log('next sql', sql)}
+    >
+      <VegaLiteChart.Actions />
+      <VegaLiteChart.Chart />
+      <VegaLiteChart.SpecEditor />
+      <VegaLiteChart.SqlEditor />
+    </VegaLiteChart.Container>
+  );
+}
+```
+
+## AI integration (`createVegaChartTool`)
+
+```tsx
+import {
+  createAiSlice,
+  createDefaultAiInstructions,
+  createDefaultAiTools,
+} from '@sqlrooms/ai';
+import {createVegaChartTool} from '@sqlrooms/vega';
+
+// inside your createRoomStore composer
+createAiSlice({
+  tools: {
+    ...createDefaultAiTools(store),
+    chart: createVegaChartTool({
+      editable: true,
+      editorMode: 'both',
+    }),
+  },
+  getInstructions: () => createDefaultAiInstructions(store),
+})(set, get, store);
+```
+
+`createVegaChartTool` constructor options:
+
+* `editable`: whether users can edit SQL/spec in the chart UI
+* `editorMode`: which editors to render (`'none' | 'sql' | 'vega' | 'both'`)
+
+### LLM invocation / Zod schema fields
+
+At runtime, the tool call payload is validated by a Zod schema.\
+These fields are supplied by the LLM when invoking the tool (not passed into
+`createVegaChartTool(...)`):
+
+* `sqlQuery`: SQL used to fetch chart data
+* `vegaLiteSpec`: Vega-Lite JSON string
+* `reasoning`: explanation shown to users for why this chart/spec was chosen
+
+## Markdown document image assets
+
+`createChartImageForMarkdownTool(store)` creates an AI-only companion tool that
+renders a Vega chart to SVG or PNG, stores it as an asset on a
+`@sqlrooms/documents` Markdown artifact, and returns a ready-to-insert Markdown
+image link such as:
+
+```md
+![Revenue by week](asset://chart-revenue-week)
+```
+
+Use this alongside the existing document commands when the assistant needs a
+portable conversation summary with static chart images instead of live SQL-backed
+charts.
+
+Chart images default to the light Vega theme with an explicit background so
+exported Markdown renders predictably in GitHub, Obsidian, PDF exports, and
+other document surfaces. When the requested static theme matches the current app
+theme, the background is resolved from the app's Tailwind `--background` token
+and written into the SVG/PNG as a concrete color. The tool also accepts
+`renderTheme: "dark"` and `background` for explicit dark/static export requests.
+
+## Example apps
+
+* Vega example: https://github.com/sqlrooms/examples/tree/main/vega
+* AI example (with chart tool): https://github.com/sqlrooms/examples/tree/main/ai
+
+## Interfaces
+
+* [VegaChartActionsProps](/api/vega/interfaces/VegaChartActionsProps.md)
+* [VegaChartContextValue](/api/vega/interfaces/VegaChartContextValue.md)
+* [VegaEditActionProps](/api/vega/interfaces/VegaEditActionProps.md)
+* [VegaExportActionProps](/api/vega/interfaces/VegaExportActionProps.md)
+* [VegaEditorState](/api/vega/interfaces/VegaEditorState.md)
+* [VegaEditorActions](/api/vega/interfaces/VegaEditorActions.md)
+* [VegaEditorContextValue](/api/vega/interfaces/VegaEditorContextValue.md)
+* [UseVegaChartEditorOptions](/api/vega/interfaces/UseVegaChartEditorOptions.md)
+* [UseVegaChartEditorReturn](/api/vega/interfaces/UseVegaChartEditorReturn.md)
+
+## Type Aliases
+
+* [ChartImageForMarkdownToolParameters](/api/vega/type-aliases/ChartImageForMarkdownToolParameters.md)
+* [ChartImageForMarkdownToolOutput](/api/vega/type-aliases/ChartImageForMarkdownToolOutput.md)
+* [VegaChartToolParameters](/api/vega/type-aliases/VegaChartToolParameters.md)
+* [VegaChartToolOutput](/api/vega/type-aliases/VegaChartToolOutput.md)
+* [VegaChartToolOptions](/api/vega/type-aliases/VegaChartToolOptions.md)
+* [EditorMode](/api/vega/type-aliases/EditorMode.md)
+* [OnSpecChange](/api/vega/type-aliases/OnSpecChange.md)
+* [OnSqlChange](/api/vega/type-aliases/OnSqlChange.md)
+
+## Variables
+
+* [ChartImageForMarkdownToolParameters](/api/vega/variables/ChartImageForMarkdownToolParameters.md)
+* [VegaChartActions](/api/vega/variables/VegaChartActions.md)
+* [VegaChartToolParameters](/api/vega/variables/VegaChartToolParameters.md)
+* [DEFAULT\_VEGA\_CHART\_DESCRIPTION](/api/vega/variables/DEFAULT_VEGA_CHART_DESCRIPTION.md)
+* [VegaEditAction](/api/vega/variables/VegaEditAction.md)
+* [VegaExportAction](/api/vega/variables/VegaExportAction.md)
+* [VegaCodeMirrorEditor](/api/vega/variables/VegaCodeMirrorEditor.md)
+* [~~VegaMonacoEditor~~](/api/vega/variables/VegaMonacoEditor.md)
+* [VegaLiteChart](/api/vega/variables/VegaLiteChart.md)
+
+## Functions
+
+* [createChartImageForMarkdownTool](/api/vega/functions/createChartImageForMarkdownTool.md)
+* [useVegaChartContext](/api/vega/functions/useVegaChartContext.md)
+* [createSqlValidator](/api/vega/functions/createSqlValidator.md)
+* [createVegaChartTool](/api/vega/functions/createVegaChartTool.md)
+* [VegaChartToolResult](/api/vega/functions/VegaChartToolResult.md)
+* [useVegaEditorContext](/api/vega/functions/useVegaEditorContext.md)
+* [useVegaChartEditor](/api/vega/functions/useVegaChartEditor.md)
+* [loadVegaLiteSchema](/api/vega/functions/loadVegaLiteSchema.md)
+* [getCachedVegaLiteSchema](/api/vega/functions/getCachedVegaLiteSchema.md)
+* [preloadVegaLiteSchema](/api/vega/functions/preloadVegaLiteSchema.md)
+
+## References
+
+### ChartImageForMarkdownToolParametersType
+
+Renames and re-exports [ChartImageForMarkdownToolParameters](/api/vega/variables/ChartImageForMarkdownToolParameters.md)

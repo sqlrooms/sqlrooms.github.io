@@ -1,0 +1,22 @@
+---
+url: 'https://sqlrooms.org/api/duckdb/functions/literalToSQL.md'
+---
+[@sqlrooms/duckdb](../index.md) / literalToSQL
+
+# Function: literalToSQL()
+
+> **literalToSQL**(`value`): `string`
+
+Convert a value to a SQL literal.
+
+## Parameters
+
+| Parameter | Type | Description |
+| ------ | ------ | ------ |
+| `value` | `unknown` | The value to convert. |
+
+## Returns
+
+`string`
+
+The SQL literal.

@@ -1,0 +1,320 @@
+---
+url: 'https://sqlrooms.org/api/artifacts.md'
+---
+# @sqlrooms/artifacts
+
+`@sqlrooms/artifacts` provides a room-store slice and React/layout helpers for
+workspace artifacts such as dashboards, notebooks, canvas documents, pivot
+tables, and apps.
+
+Artifacts are durable workspace entries. Artifact tabs are the layout/UI adapter
+for opening, closing, renaming, reordering, searching, and deleting those
+entries.
+
+Artifacts are workspace-level entries. Embedded document content should be
+modeled as blocks, usually hosted stateful blocks, rather than as hidden child
+artifacts in the artifact registry.
+
+## Usage
+
+```tsx
+import {
+  ArtifactTabs,
+  ArtifactsSliceConfig,
+  createArtifactTypeFromStatefulBlock,
+  createArtifactPanelDefinition,
+  createArtifactsSlice,
+  defineArtifactTypes,
+  useArtifactWorkspace,
+} from '@sqlrooms/artifacts';
+
+const artifactTypes = defineArtifactTypes({
+  notebook: {
+    label: 'Notebook',
+    defaultTitle: 'Notebook',
+    icon: FileTextIcon,
+    component: NotebookPanel,
+    onCreate: ({artifactId, store}) => {
+      store.getState().notebook.ensureArtifact(artifactId);
+    },
+    onEnsure: ({artifactId, store}) => {
+      store.getState().notebook.ensureArtifact(artifactId);
+    },
+    onDelete: ({artifactId, store}) => {
+      store.getState().notebook.removeArtifact(artifactId);
+    },
+  },
+});
+
+const store = createRoomStore<RoomState>(
+  persistSliceConfigs(
+    {
+      name: 'my-room',
+      sliceConfigSchemas: {
+        artifacts: ArtifactsSliceConfig,
+      },
+    },
+    (set, get, store) => ({
+      ...createArtifactsSlice({artifactTypes})(set, get, store),
+      layout: {
+        panels: {
+          artifact: createArtifactPanelDefinition(artifactTypes, store),
+        },
+      },
+    }),
+  ),
+);
+```
+
+```tsx
+<ArtifactTabs types={['notebook']} panelKey="artifact">
+  <ArtifactTabs.SearchDropdown />
+  <ArtifactTabs.Tabs />
+  <ArtifactTabs.NewButton artifactType="notebook" />
+</ArtifactTabs>
+```
+
+Use `ArtifactTabs.useActions()` from custom subcomponents when you need access
+to the tab adapter actions, and use `overlay` for dialogs or other elements that
+need that context without being rendered inside the tab strip.
+
+For non-tab artifact surfaces, use `useArtifactWorkspace()` directly:
+
+```tsx
+const artifacts = useArtifactWorkspace({
+  types: ['notebook', 'dashboard'],
+});
+
+return artifacts.selectedArtifact ? (
+  <ArtifactPanel artifact={artifacts.selectedArtifact} />
+) : (
+  <NewArtifactScreen onCreate={() => artifacts.createArtifact('notebook')} />
+);
+```
+
+## Slice API
+
+Config uses artifact terminology throughout:
+
+* `artifacts.config.artifactsById`
+
+* `artifacts.config.artifactOrder`
+
+* `artifacts.config.currentArtifactId`
+
+* `artifacts.createArtifact({type, title?, id?})`
+
+* `artifacts.ensureArtifact(id, {type, title?})`
+
+* `artifacts.renameArtifact(id, title)`
+
+* `artifacts.closeArtifact(id)`
+
+* `artifacts.deleteArtifact(id)`
+
+* `artifacts.setCurrentArtifact(id?)`
+
+* `artifacts.setArtifactOrder(order)`
+
+* `artifacts.getArtifact(id)`
+
+`closeArtifact` is non-destructive. It runs close lifecycle cleanup, while the
+tab adapter hides the layout tab so it can be reopened from search.
+
+`deleteArtifact` is destructive. It runs close and delete lifecycle hooks, then
+removes the artifact registry entry.
+
+## Artifact Tabs
+
+* `useArtifactWorkspace({types?, selectFallback?})` returns tab-free artifact
+  ids, descriptors, current selection, type definitions, and create/delete/
+  rename/select actions. It is useful for single-content hosts, sidebars, and
+  search/create surfaces that should not adopt layout-tab behavior.
+* `useArtifactTabs({tabsId?, types?, panelKey?})` returns TabStrip-compatible
+  descriptors, open tab ids, selected id, and handlers. It builds on
+  `useArtifactWorkspace()` and adds the layout-tabs adapter.
+* `ArtifactTabs` is a compound component over `TabStrip` and
+  `TabsLayout.TabContent`.
+* Pass `forceMountContent` to `ArtifactTabs` to keep visible artifact tab
+  panels mounted while hiding inactive panels.
+* `ArtifactTabs.useActions()` exposes the current tab adapter actions to custom
+  subcomponents rendered under `ArtifactTabs`.
+* `createArtifactLayoutNode(artifactId, panelKey?)` creates a stable layout
+  panel node for an artifact.
+* `createArtifactPanelDefinition(artifactTypes, store)` resolves artifact panel
+  titles, icons, and components from the runtime type registry.
+
+Type definitions are runtime configuration and are not persisted.
+Set `canCreate: false` on a type definition when an app needs to render an
+existing artifact as a read-only compatibility surface without showing it in
+creation menus or allowing `createArtifact()` calls for that type.
+
+## Stateful Block Bridge
+
+Feature packages can expose reusable stateful block definitions from
+`@sqlrooms/blocks`. Use `createArtifactTypeFromStatefulBlock()` when a
+stateful block should also be available as a top-level artifact shell:
+
+```tsx
+const artifactTypes = defineArtifactTypes({
+  dashboard: createArtifactTypeFromStatefulBlock(dashboardBlockDefinition),
+});
+```
+
+The artifact shell still owns workspace metadata such as id, title, tabs,
+current selection, and AI context. The stateful block definition owns the
+feature-specific rendering and backing-state lifecycle.
+
+## AI Context Tools
+
+`@sqlrooms/artifacts/ai` provides reusable assistant tools for artifact context:
+
+* `list_context_artifacts`
+* `read_context_artifact`
+* `set_primary_context_artifact`
+
+Use `createArtifactContextAiTools({store, readArtifact})` in apps that combine
+`@sqlrooms/artifacts` with `@sqlrooms/ai`. The factory handles primary artifact
+selection and run-context updates; the app supplies artifact payload readers for
+domain-specific types such as documents or dashboards.
+
+Commands and tools that create or select the user's primary working artifact
+can include `artifactTargetChange` in their result data. The exported
+`ArtifactTargetChange` type is a small metadata shape for host apps that want
+to compose command results with artifact-scoped AI behavior. It does not trigger
+chat changes by itself; apps still own the policy for when an AI chat should
+continue in a new artifact.
+
+## Artifact-Owned AI Sessions
+
+`@sqlrooms/artifacts/ai` also provides `createArtifactAiSlice()` for apps that
+want AI chats to belong to the current artifact without changing the generic
+chat session schema.
+
+Add `ArtifactAiConfigSchema` to persistence and compose the slice after
+`createArtifactsSlice()` and the app's AI slice:
+
+```tsx
+import {
+  ArtifactAiConfigSchema,
+  createArtifactAiSlice,
+} from '@sqlrooms/artifacts/ai';
+
+const store = createRoomStore<RoomState>(
+  persistSliceConfigs(
+    {
+      name: 'my-room',
+      sliceConfigSchemas: {
+        artifacts: ArtifactsSliceConfig,
+        artifactAi: ArtifactAiConfigSchema,
+      },
+    },
+    (set, get, store) => ({
+      ...createArtifactsSlice({artifactTypes})(set, get, store),
+      ...createAiSlice(aiOptions)(set, get, store),
+      ...createArtifactAiSlice()(set, get, store),
+    }),
+  ),
+);
+```
+
+The slice stores:
+
+```ts
+aiSessionArtifacts: Record<string, string>; // sessionId -> artifactId
+```
+
+Use `artifactAi.createArtifactScopedSession()` when creating chats from an
+artifact-scoped assistant. For default session creation, it reuses the most
+recently opened other empty, non-running session for the current artifact before
+creating a new one. This avoids duplicate blank drafts in history while still
+letting the selected empty draft start a separate chat when the host UI exposes
+a New session action. Calls that provide an explicit `name`, `modelProvider`, or
+`model` always create a fresh session so those options are preserved.
+`artifactAi.selectLatestSessionForArtifact()` and
+`artifactAi.syncCurrentArtifactAiSession()` keep the current AI session aligned
+with `artifacts.config.currentArtifactId`. Sessions without explicit artifact
+ownership are ignored by artifact-scoped history.
+
+Reusable helpers include:
+
+* `isAiSessionVisibleForArtifact`
+* `getLatestAiSessionIdForArtifact`
+* `getEmptyAiSessionIdForArtifact`
+* `getAiSessionIdsForArtifact`
+* `getAiSessionGroupsByArtifact`
+* `getRunningAiSessionCountsByArtifact`
+* `getOwningArtifactRunContextItems`
+
+`getEmptyAiSessionIdForArtifact()` requires session objects that include
+`prompt` and `uiMessages`; summary-only session rows cannot prove that a chat is
+empty.
+
+`Chat.History` should remain generic: pass a `filterSession` callback built
+with `isAiSessionVisibleForArtifact()` and keep artifact-specific labels in the
+host app. For run context, use `getOwningArtifactRunContextItems()` to prepend
+the owning artifact as the implicit primary context item.
+
+Artifact-owned AI sessions attach to artifact shells. If a stateful block is
+wrapped as a top-level artifact, use that artifact id. Stateful blocks hosted
+directly inside a block document should use the containing artifact's chat
+unless the host app intentionally introduces a block-scoped chat model.
+
+## Type Aliases
+
+* [ArtifactLifecycleContext](/api/artifacts/type-aliases/ArtifactLifecycleContext.md)
+* [ArtifactRenameLifecycleContext](/api/artifacts/type-aliases/ArtifactRenameLifecycleContext.md)
+* [ArtifactTypeDefinition](/api/artifacts/type-aliases/ArtifactTypeDefinition.md)
+* [ArtifactTypeDefinitions](/api/artifacts/type-aliases/ArtifactTypeDefinitions.md)
+* [ArtifactsSliceState](/api/artifacts/type-aliases/ArtifactsSliceState.md)
+* [CreateArtifactsSliceProps](/api/artifacts/type-aliases/CreateArtifactsSliceProps.md)
+* [RoomStateWithArtifacts](/api/artifacts/type-aliases/RoomStateWithArtifacts.md)
+* [RoomStateWithArtifactsAndLayout](/api/artifacts/type-aliases/RoomStateWithArtifactsAndLayout.md)
+* [ArtifactType](/api/artifacts/type-aliases/ArtifactType.md)
+* [ArtifactMetadata](/api/artifacts/type-aliases/ArtifactMetadata.md)
+* [ArtifactsSliceConfig](/api/artifacts/type-aliases/ArtifactsSliceConfig.md)
+* [ArtifactTabDescriptor](/api/artifacts/type-aliases/ArtifactTabDescriptor.md)
+* [UseArtifactTabsOptions](/api/artifacts/type-aliases/UseArtifactTabsOptions.md)
+* [UseArtifactTabsResult](/api/artifacts/type-aliases/UseArtifactTabsResult.md)
+* [ArtifactTabsProps](/api/artifacts/type-aliases/ArtifactTabsProps.md)
+* [ArtifactWorkspaceSelectFallback](/api/artifacts/type-aliases/ArtifactWorkspaceSelectFallback.md)
+* [ArtifactWorkspaceDescriptor](/api/artifacts/type-aliases/ArtifactWorkspaceDescriptor.md)
+* [UseArtifactWorkspaceOptions](/api/artifacts/type-aliases/UseArtifactWorkspaceOptions.md)
+* [UseArtifactWorkspaceResult](/api/artifacts/type-aliases/UseArtifactWorkspaceResult.md)
+
+## Variables
+
+* [ArtifactType](/api/artifacts/variables/ArtifactType.md)
+* [ArtifactMetadata](/api/artifacts/variables/ArtifactMetadata.md)
+* [ArtifactsSliceConfig](/api/artifacts/variables/ArtifactsSliceConfig.md)
+* [ArtifactTabs](/api/artifacts/variables/ArtifactTabs.md)
+
+## Functions
+
+* [defineArtifactTypes](/api/artifacts/functions/defineArtifactTypes.md)
+* [createArtifactTypeFromStatefulBlock](/api/artifacts/functions/createArtifactTypeFromStatefulBlock.md)
+* [createArtifactsSlice](/api/artifacts/functions/createArtifactsSlice.md)
+* [useStoreWithArtifacts](/api/artifacts/functions/useStoreWithArtifacts.md)
+* [useStoreWithArtifactsAndLayout](/api/artifacts/functions/useStoreWithArtifactsAndLayout.md)
+* [createArtifactLayoutNode](/api/artifacts/functions/createArtifactLayoutNode.md)
+* [createArtifactPanelDefinition](/api/artifacts/functions/createArtifactPanelDefinition.md)
+* [useArtifactTabs](/api/artifacts/functions/useArtifactTabs.md)
+* [useArtifactWorkspace](/api/artifacts/functions/useArtifactWorkspace.md)
+
+## References
+
+### ArtifactMetadataType
+
+Renames and re-exports [ArtifactMetadata](/api/artifacts/variables/ArtifactMetadata.md)
+
+***
+
+### ArtifactsSliceConfigType
+
+Renames and re-exports [ArtifactsSliceConfig](/api/artifacts/variables/ArtifactsSliceConfig.md)
+
+***
+
+### ArtifactTypeType
+
+Renames and re-exports [ArtifactType](/api/artifacts/variables/ArtifactType.md)

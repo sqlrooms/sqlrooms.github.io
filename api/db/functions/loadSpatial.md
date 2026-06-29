@@ -1,0 +1,34 @@
+---
+url: 'https://sqlrooms.org/api/db/functions/loadSpatial.md'
+---
+[@sqlrooms/db](../index.md) / loadSpatial
+
+# Function: loadSpatial()
+
+> **loadSpatial**(`tableName`, `fileName`, `options?`): `string`
+
+Load geometry data within a spatial file format.
+This method requires that the DuckDB spatial extension is loaded.
+Supports GeoJSON, TopoJSON, and other common spatial formats.
+For TopoJSON, set the layer option to indicate the feature to extract.
+
+## Parameters
+
+| Parameter | Type | Description |
+| ------ | ------ | ------ |
+| `tableName` | `string` | Name of the table to create |
+| `fileName` | `string` | Path to the spatial data file |
+| `options?` | {\[`key`: `string`]: `unknown`; `schema?`: `string`; `select?`: `string`\[]; `where?`: `string`; `view?`: `boolean`; `temp?`: `boolean`; `replace?`: `boolean`; `options?`: `string` | `string`\[] | `Record`<`string`, `unknown`>; } | Load options including spatial-specific options |
+| `options.schema?` | `string` | - |
+| `options.select?` | `string`\[] | - |
+| `options.where?` | `string` | - |
+| `options.view?` | `boolean` | - |
+| `options.temp?` | `boolean` | - |
+| `options.replace?` | `boolean` | - |
+| `options.options?` | `string` | `string`\[] | `Record`<`string`, `unknown`> | - |
+
+## Returns
+
+`string`
+
+SQL query string to create the table
