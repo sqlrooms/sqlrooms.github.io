@@ -1,0 +1,10 @@
+---
+url: https://sqlrooms.org/api/deck/variables/DeckMapResourceConfigParameter.md
+---
+[@sqlrooms/deck](../index.md) / DeckMapResourceConfigParameter
+
+# Variable: DeckMapResourceConfigParameter
+
+> `const` **DeckMapResourceConfigParameter**: `ZodObject`<{ `spec`: `ZodUnion`\<readonly \[`ZodString`, `ZodRecord`<`ZodString`, `ZodUnknown`>]>; `datasets`: `ZodRecord`<`ZodString`, `ZodObject`<{ `source`: `ZodOptional`<`ZodUnion`\<readonly \[`ZodObject`<{ `sqlQuery`: `ZodString`; }, `$loose`>, `ZodObject`<{ `tableName`: `ZodString`; `transformSql`: `ZodOptional`<...>; }, `$loose`>]>>; `geometryColumn`: `ZodOptional`<`ZodString`>; `geometryEncodingHint`: `ZodOptional`<`ZodEnum`<{ `geoarrow`: `"geoarrow"`; `wkb`: `"wkb"`; `wkt`: `"wkt"`; }>>; }, `$loose`>>; `configMode`: `ZodOptional`<`ZodEnum`<{ `custom`: `"custom"`; `basic`: `"basic"`; }>>; `mapStyle`: `ZodOptional`<`ZodString`>; `mapProps`: `ZodOptional`<`ZodRecord`<`ZodString`, `ZodUnknown`>>; `showLegends`: `ZodOptional`<`ZodBoolean`>; `interaction`: `ZodOptional`<`ZodObject`<{ `type`: `ZodLiteral`<`"point-radius-brush"`>; `dataset`: `ZodString`; `longitudeColumn`: `ZodString`; `latitudeColumn`: `ZodString`; `radiusMeters`: `ZodOptional`<`ZodNumber`>; `event`: `ZodOptional`<`ZodEnum`<{ `hover`: `"hover"`; `click`: `"click"`; }>>; }, `$loose`>>; `fitToData`: `ZodOptional`<`ZodObject`<{ `dataset`: `ZodString`; `longitudeColumn`: `ZodOptional`<`ZodString`>; `latitudeColumn`: `ZodOptional`<`ZodString`>; `geometryColumn`: `ZodOptional`<`ZodString`>; `geometryColumns`: `ZodOptional`<`ZodArray`<`ZodString`>>; `h3Column`: `ZodOptional`<`ZodString`>; `padding`: `ZodOptional`<`ZodNumber`>; `maxZoom`: `ZodOptional`<`ZodNumber`>; }, `$loose`>>; `dataPolicy`: `ZodOptional`<`ZodObject`<{ `disabled`: `ZodOptional`<`ZodBoolean`>; `maxRows`: `ZodOptional`<`ZodNumber`>; `reason`: `ZodOptional`<`ZodString`>; }, `$loose`>>; `settingsOpen`: `ZodOptional`<`ZodBoolean`>; }, `$loose`>
+
+Validates the portable Deck map config accepted from commands and AI tools.

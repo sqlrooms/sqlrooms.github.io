@@ -1,0 +1,68 @@
+---
+url: https://sqlrooms.org/api/room-store/type-aliases/CommandMcpAdapterOptions.md
+---
+[@sqlrooms/room-store](../index.md) / CommandMcpAdapterOptions
+
+# Type Alias: CommandMcpAdapterOptions
+
+> **CommandMcpAdapterOptions** = `object`
+
+Selection and invocation defaults for the command MCP adapter.
+
+## Properties
+
+### toolNamePrefix?
+
+> `optional` **toolNamePrefix?**: `string`
+
+***
+
+### includeInvisible?
+
+> `optional` **includeInvisible?**: `boolean`
+
+***
+
+### includeDisabled?
+
+> `optional` **includeDisabled?**: `boolean`
+
+***
+
+### includeInputSchema?
+
+> `optional` **includeInputSchema?**: `boolean`
+
+***
+
+### mapToolName?
+
+> `optional` **mapToolName?**: (`commandId`) => `string`
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `commandId` | `string` |
+
+#### Returns
+
+`string`
+
+***
+
+### defaultActor?
+
+> `optional` **defaultActor?**: `string`
+
+***
+
+### defaultTraceId?
+
+> `optional` **defaultTraceId?**: `string`
+
+***
+
+### defaultMetadata?
+
+> `optional` **defaultMetadata?**: `Record`<`string`, `unknown`>

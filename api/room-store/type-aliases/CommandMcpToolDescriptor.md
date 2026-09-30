@@ -1,0 +1,53 @@
+---
+url: https://sqlrooms.org/api/room-store/type-aliases/CommandMcpToolDescriptor.md
+---
+[@sqlrooms/room-store](../index.md) / CommandMcpToolDescriptor
+
+# Type Alias: CommandMcpToolDescriptor
+
+> **CommandMcpToolDescriptor** = `object`
+
+MCP-shaped descriptor derived from a registered room command.
+
+## Properties
+
+### name
+
+> **name**: `string`
+
+***
+
+### commandId
+
+> **commandId**: `string`
+
+***
+
+### title
+
+> **title**: `string`
+
+***
+
+### description?
+
+> `optional` **description?**: `string`
+
+***
+
+### inputSchema?
+
+> `optional` **inputSchema?**: [`RoomCommandPortableSchema`](RoomCommandPortableSchema.md)
+
+***
+
+### annotations?
+
+> `optional` **annotations?**: `object`
+
+| Name | Type |
+| ------ | ------ |
+| `readOnlyHint?` | `boolean` |
+| `idempotentHint?` | `boolean` |
+| `destructiveHint?` | `boolean` |
+| `requiresConfirmation?` | `boolean` |

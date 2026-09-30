@@ -1,0 +1,77 @@
+---
+url: https://sqlrooms.org/api/ai-core/functions/useScrollToBottom.md
+---
+[@sqlrooms/ai-core](../index.md) / useScrollToBottom
+
+# Function: useScrollToBottom()
+
+> **useScrollToBottom**<`T`>(`options`): `ScrollToBottomResult`
+
+A React hook that provides automatic scrolling behavior for containers with dynamic content.
+
+This hook helps manage scroll behavior in containers where content is being added dynamically,
+such as chat interfaces or logs. It automatically scrolls to the bottom when new content is added
+if the user was already at the bottom, and provides a function to manually scroll to the bottom.
+
+Uses a combination of data observation and DOM mutation/resize observation to reliably
+detect content changes, even when content grows inside nested fixed-height containers
+(e.g. collapsed ActivityBox components).
+
+## Type Parameters
+
+| Type Parameter | Description |
+| ------ | ------ |
+| `T` *extends* `HTMLElement` | `null` | The type of HTMLElement for the container and end references |
+
+## Parameters
+
+| Parameter | Type | Description |
+| ------ | ------ | ------ |
+| `options` | `UseScrollToBottomOptions`<`T`> | Configuration options |
+
+## Returns
+
+`ScrollToBottomResult`
+
+An object containing:
+
+* showScrollButton: Boolean indicating if the "scroll to bottom" button should be shown
+* scrollToBottom: Function to programmatically scroll to the bottom
+
+## Example
+
+```tsx
+import { useRef } from 'react';
+import { useScrollToBottom } from './use-scroll-to-bottom';
+
+function Chat({ messages }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const { showScrollButton, scrollToBottom } = useScrollToBottom({
+    dataToObserve: messages,
+    containerRef,
+    scrollOnInitialLoad: false // Disable scrolling on initial load
+  });
+
+  return (
+    <div className="relative h-[500px]">
+      <div ref={containerRef} className="h-full overflow-y-auto p-4">
+        {messages.map((message) => (
+          <div key={message.id} className="mb-4">
+            {message.text}
+          </div>
+        ))}
+      </div>
+
+      {showScrollButton && (
+        <button
+          onClick={scrollToBottom}
+          className="absolute bottom-4 right-4 rounded-full bg-blue-500 p-2"
+        >
+          ↓
+        </button>
+      )}
+    </div>
+  );
+}
+```
